@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pfp generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #000;
+      color: #fff;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    #canvas {
+      margin-top: 1rem;
+      border: 2px solid #fff;
+      border-radius: 8px;
+    }
+    #upload {
+      margin-top: 1rem;
+    }
+    #download {
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+    }
+    a {
+      display: inline-block;
+      margin-top: 2rem;
+      color: #fff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>pfp generator</h1>
+  <input type="file" id="upload" accept="image/*">
+  <br>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <br>
+  <button id="download">download</button>
+  <br>
+  <a href="index.html">← back to home</a>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const downloadBtn = document.getElementById('download');
+
+    // clearpill overlay image (GitHub raw link)
+    const overlay = new Image();
+    overlay.src = "https://github.com/nate-andres/clear-pill/raw/main/clearpill%20transparent%20bg.png";
+
+    upload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          // clear canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          // draw uploaded image
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          // draw overlay
+          overlay.onload = function() {
+            ctx.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+          }
+          if (overlay.complete) {
+            ctx.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+          }
+        }
+        img.src = event.target.result;
+      }
+      reader.readAsDataURL(file);
+    });
+
+    downloadBtn.addEventListener('click', function() {
+      const link = document.createElement('a');
+      link.download = 'clearpill-pfp.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
